@@ -6,22 +6,26 @@ import { MailSenderModule } from './mail-sender/mail-sender.module';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerBehindProxyGuard } from './common/guards/throttler-behind-proxy.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([{
-      ttl: 60,
-      limit: 10,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60,
+        limit: 10,
+      },
+    ]),
     AuthModule,
     MailSenderModule,
-    AuthModule
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerBehindProxyGuard
+      useClass: ThrottlerBehindProxyGuard,
     },
     AppService,
   ],

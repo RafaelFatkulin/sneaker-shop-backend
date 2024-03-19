@@ -5,19 +5,22 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import config from '../config';
 import { MailSenderModule } from '../mail-sender/mail-sender.module';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from '../users/users.service';
 
 @Module({
   imports: [
-    PassportModule.register({defaultStrategy: 'jwt'}),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: config.jwt.secretOrKey,
       signOptions: {
-        algorithm: 'HS256'
-      }
+        algorithm: 'HS256',
+      },
     }),
-    MailSenderModule
+    MailSenderModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy, PrismaService, UsersService],
 })
 export class AuthModule {}

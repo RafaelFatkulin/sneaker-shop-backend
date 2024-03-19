@@ -1,5 +1,6 @@
 import {
-  IsEmail, IsEnum,
+  IsEmail,
+  IsEnum,
   IsNotEmpty,
   MaxLength,
   MinLength,
@@ -9,7 +10,8 @@ enum Role {
   ADMIN = 'ADMIN',
   USER = 'USER',
 }
-export class SignupRequest {
+
+export class CreateUserRequest {
   @IsNotEmpty()
   @IsEmail()
   email: string;
