@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model EmailChange {
+  token      String   @id @db.Char(21)
+  newEmail   String
+  userId     Int      @unique
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+
+  @@map("email-change")
+}
+
+model EmailVerification {
+  token      String   @id @db.Char(21)
+  userId     Int      @unique
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+
+  @@map("email-verification")
+}
+
+model PasswordReset {
+  token      String   @id @db.Char(21)
+  userId     Int      @unique
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+
+  @@map("password-reset")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id                Int                @id @default(autoincrement())
+  name              String
+  phone             String?            @unique
+  role              UserRole           @default(USER)
+  address           String?
+  passwordHash      String
+  email             String             @unique
+  emailVerified     Boolean            @default(false)
+  emailChange       EmailChange?
+  emailVerification EmailVerification?
+  passwordReset     PasswordReset?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
