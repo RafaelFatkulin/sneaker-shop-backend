@@ -7,6 +7,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerBehindProxyGuard } from './common/guards/throttler-behind-proxy.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { UsersModule } from './users/users.module';
+import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { BrandsModule } from './brands/brands.module';
+import * as path from 'path';
 
 @Module({
   imports: [
@@ -16,10 +19,23 @@ import { UsersModule } from './users/users.module';
         limit: 10,
       },
     ]),
+    // I18nModule.forRoot({
+    //   fallbackLanguage: 'en',
+    //   loaderOptions: {
+    //     path: path.join(__dirname, '/i18n/'),
+    //     watch: true,
+    //   },
+    //   resolvers: [
+    //     { use: QueryResolver, options: ['lang'] },
+    //     AcceptLanguageResolver,
+    //     new HeaderResolver(['x-lang']),
+    //   ],
+    // }),
     AuthModule,
     MailSenderModule,
     AuthModule,
     UsersModule,
+    BrandsModule,
   ],
   controllers: [AppController],
   providers: [

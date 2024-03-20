@@ -3,4 +3,5 @@ export interface JwtPayload {
   username: string;
   email: string;
   emailVerified: boolean;
+  role: "ADMIN" | "USER"
 }

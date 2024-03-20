@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-import nanoid from 'nanoid';
+import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -18,7 +18,7 @@ export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-    mailSenderService: MailSenderService,
+    private readonly mailSenderService: MailSenderService,
   ) {}
   async isEmailAvailable(email: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({
@@ -28,7 +28,7 @@ export class UsersService {
     return user === null;
   }
   async addUser(createUserRequest: CreateUserRequest): Promise<User> {
-    const emailVerificationToken = nanoid();
+    const emailVerificationToken = uuidv4();
 
     if (!(await this.isEmailAvailable(createUserRequest.email))) {
       throw new ForbiddenException('Данный адрес электронной почты занят');
@@ -39,6 +39,10 @@ export class UsersService {
         name: createUserRequest.name,
         email: createUserRequest.email,
         passwordHash: await bcrypt.hash(createUserRequest.password, 10),
+        phone: createUserRequest.phone || null,
+        address: createUserRequest.address || null,
+        role: createUserRequest.role || 'USER',
+        emailVerified: false,
         emailVerification: {
           create: {
             token: emailVerificationToken,

@@ -1,0 +1,9 @@
+{
+  "email": "электронная почта",
+  "password": "пароль",
+  "NOT_EMPTY": "{property} не может быть пустым",
+  "INVALID_EMAIL": "эл. почта указана неверно",
+  "INVALID_BOOLEAN": "{property} не является логическим значением (true/false)",
+  "MIN": "Значение свойства {property}: \"{value}\" должно быть не меньше {constraints.0}, {message}",
+  "MAX": "Значение свойства {property}: \"{value}\" должно быть меньше {constraints.0}, {message}"
+}

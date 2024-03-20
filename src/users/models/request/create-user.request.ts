@@ -1,7 +1,7 @@
 import {
   IsEmail,
   IsEnum,
-  IsNotEmpty,
+  IsNotEmpty, IsOptional, IsPhoneNumber, IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -21,9 +21,17 @@ export class CreateUserRequest {
   @MinLength(8)
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(Role)
-  role: string;
+  role?: "ADMIN" | "USER";
+
+  @IsOptional()
+  @IsPhoneNumber('RU')
+  phone?: string;
+
+  @IsString()
+  @IsOptional()
+  address?: string;
 
   @IsNotEmpty()
   @MinLength(8)

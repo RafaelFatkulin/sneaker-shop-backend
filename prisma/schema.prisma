@@ -14,7 +14,7 @@ datasource db {
 }
 
 model EmailChange {
-  token      String   @id @db.Char(21)
+  token      String   @id @db.Char(36)
   newEmail   String
   userId     Int      @unique
   User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -24,7 +24,7 @@ model EmailChange {
 }
 
 model EmailVerification {
-  token      String   @id @db.Char(21)
+  token      String   @id @db.Char(36)
   userId     Int      @unique
   User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
@@ -33,7 +33,7 @@ model EmailVerification {
 }
 
 model PasswordReset {
-  token      String   @id @db.Char(21)
+  token      String   @id @db.Char(36)
   userId     Int      @unique
   User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
@@ -48,12 +48,12 @@ enum UserRole {
 
 model User {
   id                Int                @id @default(autoincrement())
-  name              String
+  name              String             @db.VarChar(255)
   phone             String?            @unique
   role              UserRole           @default(USER)
   address           String?
-  passwordHash      String
-  email             String             @unique
+  passwordHash      String             @db.VarChar(255)
+  email             String             @unique @db.VarChar(255)
   emailVerified     Boolean            @default(false)
   emailChange       EmailChange?
   emailVerification EmailVerification?
@@ -63,4 +63,95 @@ model User {
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+model Color {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+  hex  String @db.VarChar(255)
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("colors")
+}
+
+model Size {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sizes")
+}
+
+model Category {
+  id          Int    @id @default(autoincrement())
+  name        String @db.VarChar(255)
+  description String @db.Text()
+
+  productInfos ProductInfo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Brand {
+  id          Int    @id @default(autoincrement())
+  name        String @db.VarChar(255)
+  description String @db.Text()
+  logo        String @db.VarChar(255)
+
+  productInfos ProductInfo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("brands")
+}
+
+model ProductInfo {
+  id          Int    @id @default(autoincrement())
+  name        String @db.VarChar(255)
+  description String @db.Text()
+  mainImage   String @db.VarChar(255)
+  gallery     Json   @db.JsonB()
+  rating      Float  @db.Real()
+
+  brand   Brand @relation(fields: [brandId], references: [id])
+  brandId Int
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+
+  @@map("product-info")
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+
+  productInfo   ProductInfo @relation(fields: [productInfoId], references: [id])
+  productInfoId Int
+
+  color   Color @relation(fields: [colorId], references: [id])
+  colorId Int
+
+  size   Size @relation(fields: [sizeId], references: [id])
+  sizeId Int
+
+  quantity Int   @db.Integer()
+  price    Float @db.Real()
+
+  @@map("products")
 }
